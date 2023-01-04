@@ -106,9 +106,13 @@ def check_style(path, replace_output_path = None):
 def main(path):
     count, lines = check_style(path)
     print("Found %d style errors." % (count))
-    print('---')
-    print("\n".join(lines))
-    print('---')
+
+    if (count > 0):
+        print('---')
+        print("\n".join(lines))
+        print('---')
+
+    sys.exit(count)
 
 def _load_args(args):
     executable = args.pop(0)

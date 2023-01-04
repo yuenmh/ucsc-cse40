@@ -70,7 +70,7 @@ class Question(object):
 
     def check_not_implemented(self, value):
         if (isinstance(value, type(NotImplemented))):
-            fail("NotImplemented returned.")
+            self.fail("NotImplemented returned.")
             return True
 
         return False

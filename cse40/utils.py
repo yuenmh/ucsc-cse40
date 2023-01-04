@@ -120,7 +120,7 @@ def extract_notebook_code(path):
 
         contents.append((''.join(cell['source'])))
 
-    return "\n".join(contents)
+    return "\n".join(contents) + "\n"
 
 def get_temp_path(prefix = '', suffix = '', rm = True):
     """

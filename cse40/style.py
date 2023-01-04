@@ -8,8 +8,8 @@ import cse40.question
 import cse40.utils
 
 STYLE_OPTIONS = {
-    'max-line-length': 100,
-    'max-doc-length': 100,
+    'max_line_length': 100,
+    'max_doc_length': 100,
     'select': 'E,W,F',
     'show_source': True,
     'color': 'never',
@@ -52,7 +52,7 @@ class Style(cse40.question.Question):
             self.add_message("Style is clean!")
             self.full_credit()
         else:
-            self.add_message("Code has %d style issues (shown below). Note that line numbers will be off because of iPython notebooks")
+            self.add_message("Code has %d style issues (shown below). Note that line numbers will be offset because of iPython notebooks." % (error_count))
             self.add_message("--- Style Output BEGIN ---")
             self.add_message("\n".join(style_output))
             self.add_message("--- Style Output END ---")
@@ -102,3 +102,23 @@ def check_style(path, replace_output_path = None):
         cse40.utils.remove_dirent(path)
 
     return (report._application.result_count, lines)
+
+def main(path):
+    count, lines = check_style(path)
+    print("Found %d style errors." % (count))
+    print('---')
+    print("\n".join(lines))
+    print('---')
+
+def _load_args(args):
+    executable = args.pop(0)
+    if (len(args) != 1 or ({'h', 'help'} & {arg.lower().strip().replace('-', '') for arg in args})):
+        print("USAGE: python3 -m cse40.style <py or ipynb path>", file = sys.stderr)
+        sys.exit(1)
+
+    path = os.path.abspath(args.pop(0))
+
+    return path
+
+if (__name__ == '__main__'):
+    main(_load_args(sys.argv))

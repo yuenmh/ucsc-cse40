@@ -29,6 +29,20 @@ class Assignment(object):
 
         return score
 
+    def get_score(self):
+        """
+        Return (total score, max score).
+        """
+
+        total_score = 0
+        max_score = 0
+
+        for question in self._questions:
+            total_score += question.score
+            max_score += question.max_points
+
+        return (total_score, max_score)
+
     def report(self):
         """
         Return a string representation of the grading for this assignment.

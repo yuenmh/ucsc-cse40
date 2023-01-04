@@ -85,6 +85,16 @@ def invoke_with_timeout(timeout, function):
 
     return (True, value)
 
+def import_path(path, module_name = None):
+    if (module_name is None):
+        module_name = str(uuid.uuid4()).replace('-', '')
+
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    return module
+
 def prepare_submission(path):
     """
     Get a submission from a path (to either a notebook or vanilla python).
@@ -95,9 +105,7 @@ def prepare_submission(path):
     if (path.endswith('.ipynb')):
         submission = cse40.ipynbimport.load_from_path(path)
     elif (path.endswith('.py')):
-        spec = importlib.util.spec_from_file_location("submission", path)
-        submission = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(submission)
+        submission = import_path(path)
     else:
         raise ValueError("Unknown extension for submission: '%s'." % (path))
 

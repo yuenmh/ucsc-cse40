@@ -1,0 +1,116 @@
+"""
+A single question (test case) for an assignment.
+"""
+
+import abc
+import functools
+import traceback
+
+import cse40.utils
+
+DEFAULT_TIMEOUT_SEC = 60
+
+class Question(object):
+    """
+    Questions are gradeable portions of an assignment.
+    They can also be thought of as "test cases".
+    Note that all scoring is in ints.
+    """
+
+    def __init__(self, name, max_points, timeout = DEFAULT_TIMEOUT_SEC):
+        self.name = name
+
+        self.max_points = max_points
+        self._timeout = timeout
+
+        # Scoring artifacts.
+        self.score = 0
+        self.message = ''
+
+    def grade(self, submission, additional_data = {}):
+        """
+        Invoke the scoring method using a timeout and cleanup.
+        Return the score.
+        """
+
+        helper = functools.partial(self._score_helper, submission, additional_data = additional_data)
+
+        try:
+            success, value = cse40.utils.invoke_with_timeout(self._timeout, helper)
+        except Exception as ex:
+            self.fail("Raised an exception: " + traceback.format_exc())
+            return 0
+
+        if (not success):
+            if (value is None):
+                self.fail("Timeout (%d seconds)." % (self._timeout))
+            else:
+                self.fail("Error durring execution: " + value);
+
+            return 0
+
+        # Because we use the helper method, we can only get None back if there was an error.
+        if (value is None):
+            self.fail("Error running scoring.")
+            return 0
+
+        self.score = value[0]
+        self.message = value[1]
+
+        return self.score
+
+    def _score_helper(self, submission, additional_data = {}):
+        """
+        Score the question, but make sure to return the score and message so
+        multiprocessing can properly pass them back.
+        """
+
+        self.score_question(submission, **additional_data)
+        return (self.score, self.message)
+
+    def check_not_implemented(self, value):
+        if (isinstance(value, type(NotImplemented))):
+            fail("NotImplemented returned.")
+            return True
+
+        return False
+
+    def fail(self, message):
+        """
+        Immediatley fail this question, no partial credit.
+        """
+
+        self.score = 0
+        self.message = message
+
+    def full_credit(self):
+        self.score = self.max_points
+
+    def add_message(self, message, score = 0):
+        if (self.message != ''):
+            self.message += "\n"
+        self.message += message
+
+        self.score += score
+
+    @abc.abstractmethod
+    def score_question(self, submission, **kwargs):
+        """
+        Assign an actual score to this question.
+        The implementer has full access to instance variables.
+        However, only self.score and self.message can be modified.
+        """
+
+        pass
+
+    def scoring_report(self):
+        """
+        Get a string that represents the scoring for this question.
+        """
+
+        lines = ["Question %s: %d / %d" % (self.name, self.score, self.max_points)]
+        if (self.message != ''):
+            for line in self.message.split("\n"):
+                lines.append("   " + line)
+
+        return "\n".join(lines)

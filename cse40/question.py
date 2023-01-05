@@ -69,6 +69,10 @@ class Question(object):
         return (self.score, self.message)
 
     def check_not_implemented(self, value):
+        if (value is None):
+            self.fail("None returned.")
+            return True
+
         if (isinstance(value, type(NotImplemented))):
             self.fail("NotImplemented returned.")
             return True
@@ -114,3 +118,29 @@ class Question(object):
                 lines.append("   " + line)
 
         return "\n".join(lines)
+
+    def to_dict(self):
+        """
+        Convert to all simple structures that can be later converted to JSON.
+        """
+
+        return {
+            'name': self.name,
+            'max_points': self.max_points,
+            'timeout': self._timeout,
+            'score': self.score,
+            'message': self.message,
+        }
+
+    @staticmethod
+    def from_dict(data):
+        """
+        Partner to to_dict().
+        Questions constructed with this will not have an implementation for score_question().
+        """
+
+        question = Question(data['name'], data['max_points'], data['timeout'])
+        question.score = data['score']
+        question.message = data['message']
+
+        return question

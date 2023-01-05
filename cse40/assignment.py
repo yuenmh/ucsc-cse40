@@ -66,3 +66,30 @@ class Assignment(object):
         output.append("Total: %d / %d" % (total_score, max_score))
 
         return "\n".join(output)
+
+    def to_dict(self):
+        """
+        Convert to all simple structures that can be later converted to JSON.
+        """
+
+        return {
+            'name': self._name,
+            'start': self._grading_start,
+            'end': self._grading_end,
+            'questions': [question.to_dict() for question in self._questions],
+        }
+
+    @staticmethod
+    def from_dict(data):
+        """
+        Partner to to_dict().
+        Questions constructed with this will not have an implementation for score_question().
+        """
+
+        questions = [Question.from_dict(question) for question in data['questions']]
+        assignment = Assignment(data['name'], questions)
+
+        assignment._grading_start = data['start']
+        assignment._grading_end = data['end']
+
+        return assignment

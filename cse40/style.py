@@ -7,6 +7,9 @@ from flake8.api import legacy as flake8
 import cse40.question
 import cse40.utils
 
+# For codes, see:
+# flake8: https://flake8.pycqa.org/en/latest/user/error-codes.html
+# pycodestyle: https://pycodestyle.pycqa.org/en/latest/intro.html#error-codes
 STYLE_OPTIONS = {
     'max_line_length': 100,
     'max_doc_length': 100,

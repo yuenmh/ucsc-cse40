@@ -111,6 +111,26 @@ def prepare_submission(path):
 
     return submission
 
+def extract_code(path):
+    """
+    Gets the source code out of a path (to either a notebook or vanilla python).
+    """
+
+    code = None
+
+    if (path.endswith('.ipynb')):
+        code = extract_notebook_code(path)
+    elif (path.endswith('.py')):
+        with open(path, 'r') as file:
+            lines = file.readlines()
+        lines = [line.rstrip() for line in lines]
+
+        code = "\n".join(lines) + "\n"
+    else:
+        raise ValueError("Unknown extension for extracting code: '%s'." % (path))
+
+    return code
+
 def extract_notebook_code(path):
     """
     Extract all the code cells from an iPython notebook.

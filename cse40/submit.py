@@ -14,7 +14,7 @@ import cse40.utils
 ENCODING = 'utf-8'
 DEFAULT_CONFIG_PATH = 'config.json'
 DEFAULT_SUBMISSION_PATH = 'assignment.ipynb'
-DEFAULT_AUTOGRADER_URL = 'sozopol.soe.ucsc.edu:12345'
+DEFAULT_AUTOGRADER_URL = 'http://sozopol.soe.ucsc.edu:12345'
 
 def submit_notebook(config_path = DEFAULT_CONFIG_PATH, submission_path = DEFAULT_SUBMISSION_PATH,
         autograde_url = DEFAULT_AUTOGRADER_URL):

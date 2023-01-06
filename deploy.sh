@@ -19,6 +19,8 @@ function main() {
 
     source "${SECRETS_PATH}"
 
+    rm -rf "${THIS_DIR}/dist"
+
     python3 -m build
     python3 -m twine upload -r testpypi dist/*
     python3 -m twine upload dist/*

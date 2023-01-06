@@ -102,12 +102,15 @@ def prepare_submission(path):
 
     submission = None
 
-    if (path.endswith('.ipynb')):
-        submission = cse40.ipynbimport.load_from_path(path)
-    elif (path.endswith('.py')):
-        submission = import_path(path)
-    else:
-        raise ValueError("Unknown extension for submission: '%s'." % (path))
+    try:
+        if (path.endswith('.ipynb')):
+            submission = cse40.ipynbimport.load_from_path(path)
+        elif (path.endswith('.py')):
+            submission = import_path(path)
+        else:
+            raise ValueError("Unknown extension for submission: '%s'." % (path))
+    except Exception as ex:
+        raise RuntimeError("Student code failed to run.", ex)
 
     return submission
 

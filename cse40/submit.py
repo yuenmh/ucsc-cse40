@@ -9,7 +9,7 @@ import sys
 import urllib.request
 
 import cse40.assignment
-import cse40.utils
+import cse40.code
 
 ENCODING = 'utf-8'
 DEFAULT_CONFIG_PATH = 'config.json'
@@ -18,7 +18,7 @@ DEFAULT_AUTOGRADER_URL = 'http://sozopol.soe.ucsc.edu:12345'
 
 def submit_notebook(config_path = DEFAULT_CONFIG_PATH, submission_path = DEFAULT_SUBMISSION_PATH,
         autograde_url = DEFAULT_AUTOGRADER_URL):
-    source_code = cse40.utils.extract_code(submission_path)
+    source_code = cse40.code.extract_code(submission_path)
 
     with open(config_path, 'r') as file:
         config = json.load(file)

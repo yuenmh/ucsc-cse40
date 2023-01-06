@@ -1,6 +1,4 @@
 import atexit
-import importlib
-import json
 import multiprocessing
 import os
 import shutil
@@ -9,7 +7,7 @@ import tempfile
 import traceback
 import uuid
 
-import cse40.ipynbimport
+import cse40.code
 
 REAP_TIME_SEC = 5
 
@@ -85,73 +83,12 @@ def invoke_with_timeout(timeout, function):
 
     return (True, value)
 
-def import_path(path, module_name = None):
-    if (module_name is None):
-        module_name = str(uuid.uuid4()).replace('-', '')
-
-    spec = importlib.util.spec_from_file_location(module_name, path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-
-    return module
-
 def prepare_submission(path):
     """
     Get a submission from a path (to either a notebook or vanilla python).
     """
 
-    submission = None
-
-    try:
-        if (path.endswith('.ipynb')):
-            submission = cse40.ipynbimport.load_from_path(path)
-        elif (path.endswith('.py')):
-            submission = import_path(path)
-        else:
-            raise ValueError("Unknown extension for submission: '%s'." % (path))
-    except Exception as ex:
-        raise RuntimeError("Student code failed to run.", ex)
-
-    return submission
-
-def extract_code(path):
-    """
-    Gets the source code out of a path (to either a notebook or vanilla python).
-    """
-
-    code = None
-
-    if (path.endswith('.ipynb')):
-        code = extract_notebook_code(path)
-    elif (path.endswith('.py')):
-        with open(path, 'r') as file:
-            lines = file.readlines()
-        lines = [line.rstrip() for line in lines]
-
-        code = "\n".join(lines) + "\n"
-    else:
-        raise ValueError("Unknown extension for extracting code: '%s'." % (path))
-
-    return code
-
-def extract_notebook_code(path):
-    """
-    Extract all the code cells from an iPython notebook.
-    A concatenation of all the cells (with a newline between each cell) will be output.
-    """
-
-    with open(path, 'r') as file:
-        notebook = json.load(file)
-
-    contents = []
-
-    for cell in notebook['cells']:
-        if (cell['cell_type'] != 'code'):
-            continue
-
-        contents.append((''.join(cell['source'])))
-
-    return "\n".join(contents) + "\n"
+    return cse40.code.sanatize_and_import_path(path)
 
 def get_temp_path(prefix = '', suffix = '', rm = True):
     """

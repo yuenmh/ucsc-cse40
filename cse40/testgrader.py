@@ -6,16 +6,16 @@ import glob
 import os
 import sys
 
-import cse40.utils
+import cse40.code
 
 def test_dir(grader_path, solutions_dir):
-    grader = cse40.utils.import_path(grader_path)
+    grader = cse40.code.import_path(grader_path)
     error_count = 0
 
     for solution_path in glob.glob(os.path.join(solutions_dir, '*.py')):
         print("Testing solution: " + solution_path)
 
-        solution = cse40.utils.import_path(solution_path)
+        solution = cse40.code.import_path(solution_path)
 
         if ('EXPECTED_POINTS' not in dir(solution)):
             print("    ERROR: 'EXPECTED_POINTS' not defined in solution file.")

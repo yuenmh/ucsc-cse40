@@ -4,6 +4,7 @@ import sys
 
 from flake8.api import legacy as flake8
 
+import cse40.code
 import cse40.question
 import cse40.utils
 
@@ -67,7 +68,7 @@ def check_style(path, replace_output_path = None):
     if (path.endswith('.py')):
         pass
     elif (path.endswith('.ipynb')):
-        contents = cse40.utils.extract_notebook_code(path)
+        contents = cse40.code.extract_notebook_code(path)
 
         temp_path = cse40.utils.get_temp_path(prefix = 'style_', suffix = '_notebook')
         cleanup_paths.append(temp_path)

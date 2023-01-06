@@ -18,7 +18,7 @@ setuptools.setup(
     version = '0.1.2',
     keywords = 'grading',
 
-    description = "Dependencies for UCSC's CSE 40: Machine Learning Basics: Data Analysis and Empirical Methods.",
+    description = "Dependencies for UCSC's CSE 40 - ML Basics: Data Analysis and Empirical Methods",
     long_description = get_description(),
     long_description_content_type = 'text/markdown',
 

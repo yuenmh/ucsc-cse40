@@ -33,11 +33,12 @@ class Question(object):
         Return the score.
         """
 
-        helper = functools.partial(self._score_helper, submission, additional_data = additional_data)
+        helper = functools.partial(self._score_helper, submission,
+                additional_data = additional_data)
 
         try:
             success, value = cse40.utils.invoke_with_timeout(self._timeout, helper)
-        except Exception as ex:
+        except Exception:
             self.fail("Raised an exception: " + traceback.format_exc())
             return 0
 
@@ -45,7 +46,7 @@ class Question(object):
             if (value is None):
                 self.fail("Timeout (%d seconds)." % (self._timeout))
             else:
-                self.fail("Error durring execution: " + value);
+                self.fail("Error durring execution: " + value)
 
             return 0
 

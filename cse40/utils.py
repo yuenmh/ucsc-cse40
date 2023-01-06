@@ -18,7 +18,8 @@ class Mock(object):
         self.call_history = list()
 
     def __repr__(self):
-        return "Mock -- Item History: %s, Attribute History: %s, Call History: %s" % (str(self.item_history), str(self.attribute_history), str(self.call_history))
+        return "Mock -- Item History: %s, Attribute History: %s, Call History: %s" % (
+            str(self.item_history), str(self.attribute_history), str(self.call_history))
 
     def __call__(self, *args, **kwargs):
         self.call_history.append((args, kwargs))
@@ -93,7 +94,8 @@ def prepare_submission(path):
 def get_temp_path(prefix = '', suffix = '', rm = True):
     """
     Get a path to a valid temp dirent.
-    If rm is True, then the dirent will be attempted to be deleted on exit (no error will ocurr if the path is not there).
+    If rm is True, then the dirent will be attempted to be deleted on exit
+    (no error will ocurr if the path is not there).
     """
 
     path = None

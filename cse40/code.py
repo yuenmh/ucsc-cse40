@@ -9,6 +9,8 @@ import os
 import types
 import uuid
 
+import cse40.utils
+
 AST_NODE_WHITELIST = [ast.Import, ast.ImportFrom, ast.FunctionDef, ast.ClassDef]
 
 def extract_code(path):
@@ -53,6 +55,13 @@ def extract_notebook_code(path):
 def import_path(path, module_name = None):
     if (module_name is None):
         module_name = str(uuid.uuid4()).replace('-', '')
+
+    # If it's a notebook, extract the code first and put it in a temp file.
+    if (path.endswith('.ipynb')):
+        source_code = extract_code(path)
+        path = cse40.utils.get_temp_path(suffix = '.py')
+        with open(path, 'w') as file:
+            file.write(source_code)
 
     spec = importlib.util.spec_from_file_location(module_name, path)
     module = importlib.util.module_from_spec(spec)

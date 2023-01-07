@@ -28,6 +28,7 @@ def test_dir(grader_path, solutions_dir):
         if (score != solution.EXPECTED_POINTS):
             print("    ERROR: Expected score (%s) does not match actual score (%s)." % (
                 solution.EXPECTED_POINTS, score))
+            error_count += 1
             continue
 
     return error_count

@@ -69,7 +69,7 @@ def import_path(path, module_name = None):
 
     return module
 
-def sanatize_and_import_path(path):
+def sanitize_and_import_path(path):
     """
     Get the code from a source file, sanitize it, exec it, and return it as a namespace (module).
     Sanitization in this context means removing things that are not
@@ -80,21 +80,21 @@ def sanatize_and_import_path(path):
     filename = os.path.basename(path)
     source_code = extract_code(path)
 
-    return sanatize_and_import_code(source_code, filename)
+    return sanitize_and_import_code(source_code, filename)
 
-def sanatize_and_import_code(source_code, filename):
+def sanitize_and_import_code(source_code, filename):
     """
-    See sanatize_and_import_path().
+    See sanitize_and_import_path().
     """
 
-    module_ast = sanatize_code(source_code)
+    module_ast = sanitize_code(source_code)
 
     globals_defs = {}
     exec(compile(module_ast, filename = filename, mode = "exec"), globals_defs)
 
     return types.SimpleNamespace(**globals_defs)
 
-def sanatize_code(source_code):
+def sanitize_code(source_code):
     module_ast = ast.parse(source_code)
 
     keep_nodes = []

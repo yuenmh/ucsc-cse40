@@ -3,7 +3,7 @@
 # Check all .py and .ipynb files in this project for style.
 
 readonly THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-readonly BASE_DIR="${THIS_DIR}/.."
+readonly BASE_DIR=$(realpath "${THIS_DIR}/..")
 
 function main() {
     if [[ $# -ne 0 ]]; then
@@ -14,7 +14,7 @@ function main() {
     trap exit SIGINT
 
     local error_count=0
-    for path in $(find . \( -name '*.py' -o -name '*.ipynb' \)) ; do
+    for path in $(find "${BASE_DIR}" \( -name '*.py' -o -name '*.ipynb' \)) ; do
         if [[ "${path}" == *'.ipynb_checkpoints'* ]] ; then
             continue
         fi

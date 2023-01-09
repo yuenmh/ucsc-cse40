@@ -43,7 +43,7 @@ class Assignment(object):
 
         return (total_score, max_score)
 
-    def report(self):
+    def report(self, question_prefix = ''):
         """
         Return a string representation of the grading for this assignment.
         """
@@ -60,7 +60,7 @@ class Assignment(object):
             total_score += question.score
             max_score += question.max_points
 
-            output.append(question.scoring_report())
+            output.append(question.scoring_report(prefix = question_prefix))
 
         output.append('')
         output.append("Total: %d / %d" % (total_score, max_score))

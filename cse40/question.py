@@ -108,12 +108,15 @@ class Question(object):
 
         pass
 
-    def scoring_report(self):
+    def scoring_report(self, prefix = ''):
         """
         Get a string that represents the scoring for this question.
         """
 
-        lines = ["Question %s: %d / %d" % (self.name, self.score, self.max_points)]
+        if ((prefix != '') and (not prefix.endswith(' '))):
+            prefix += ' '
+
+        lines = ["%s%s: %d / %d" % (prefix, self.name, self.score, self.max_points)]
         if (self.message != ''):
             for line in self.message.split("\n"):
                 lines.append("   " + line)

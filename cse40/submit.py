@@ -21,6 +21,8 @@ def submit_notebook(config_path = DEFAULT_CONFIG_PATH, submission_path = DEFAULT
 
     with open(config_path, 'r') as file:
         config = json.load(file)
+
+    config['task'] = 'grade'
     config['code'] = source_code
 
     payload = bytes(json.dumps(config), ENCODING)

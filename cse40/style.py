@@ -57,8 +57,8 @@ class Style(cse40.question.Question):
             self.add_message("Style is clean!")
             self.full_credit()
         else:
-            self.add_message("Code has %d style issues (shown below)."
-                    + " Note that line numbers will be offset because of iPython notebooks."
+            self.add_message(("Code has %d style issues (shown below)."
+                    + " Note that line numbers will be offset because of iPython notebooks.")
                     % (error_count))
             self.add_message("--- Style Output BEGIN ---")
             self.add_message("\n".join(style_output))

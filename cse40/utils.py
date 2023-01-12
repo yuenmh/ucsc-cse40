@@ -1,10 +1,10 @@
 import atexit
+import multiprocessing
 import os
-import queue
 import shutil
 import sys
 import tempfile
-import threading
+import time
 import traceback
 import uuid
 
@@ -46,29 +46,46 @@ def _invoke_helper(result, function):
     sys.stdout.flush()
 
     result.put((value, error))
+    result.close()
 
 # Return: (success, function return value)
 # On timeout, success will be false and the value will be None.
 # On error, success will be false and value will be the string stacktrace.
 # On successful completion, success will be true and value may be None (if nothing was returned).
 def invoke_with_timeout(timeout, function):
-    result = queue.Queue(1)
+    if (not sys.platform.startswith('linux')):
+        # Mac and Windows have some pickling issues with multiprocessing.
+        # Just run them without a timeout.
+        # Any autograder will be run on a Linux machine and will be safe.
+        start_time = time.time()
+        value = function()
+        runtime = time.time() - start_time
+
+        if (runtime > timeout):
+            return (False, None)
+
+        return (True, value)
+
+    result = multiprocessing.Queue(1)
 
     # Note that we use processes instead of threads so they can be more completely killed.
-    thread = threading.Thread(target = _invoke_helper, args = (result, function), daemon = True)
-    thread.start()
+    process = multiprocessing.Process(target = _invoke_helper, args = (result, function))
+    process.start()
 
     # Wait for at most the timeout.
-    thread.join(timeout)
+    process.join(timeout)
 
-    # Check to see if the thread is still running.
-    if thread.is_alive():
-        # Try to reap the thread once before just giving up on it.
-        thread.join(REAP_TIME_SEC)
+    # Check to see if the process is still running.
+    if process.is_alive():
+        # Kill the long-running process.
+        process.terminate()
+
+        # Try to reap the process once before just giving up on it.
+        process.join(REAP_TIME_SEC)
 
         return (False, None)
 
-    # Check to see if the thread explicitly existed (like via sys.exit()).
+    # Check to see if the process explicitly existed (like via sys.exit()).
     if (result.empty()):
         return (False, 'Code explicitly exited (like via sys.exit()).')
 

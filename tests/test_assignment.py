@@ -12,7 +12,7 @@ class TestAssignment(unittest.TestCase):
             if (result):
                 self.full_credit()
             else:
-                self.fail()
+                self.fail("Got a False.")
 
     def test_base_full_credit(self):
         questions = [
@@ -46,11 +46,11 @@ class TestAssignment(unittest.TestCase):
 
     def test_sleep_fail(self):
         questions = [
-            TestAssignment.Q1('Q1', 1, timeout = 0.1),
+            TestAssignment.Q1('Q1', 1, timeout = 0.05),
         ]
 
         def submission():
-            time.sleep(1.0)
+            time.sleep(0.25)
             return True
 
         # Shorten the reap time for testing.

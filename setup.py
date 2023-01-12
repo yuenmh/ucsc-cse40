@@ -36,6 +36,7 @@ setuptools.setup(
     packages = setuptools.find_packages(),
 
     install_requires = [
+        'dill',
         'flake8==6.0.0',
         'jupyterlab>=3.5.0',
         'matplotlib>=3.6.2',

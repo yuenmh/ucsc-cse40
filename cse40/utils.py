@@ -1,4 +1,5 @@
 import atexit
+import dill
 import multiprocessing
 import os
 import shutil
@@ -33,7 +34,9 @@ class Mock(object):
         self.attribute_history.append(name)
         return self
 
-def _invoke_helper(queue, function):
+def _invoke_helper(queue, payload):
+    function = dill.loads(payload)
+
     value = None
     error = None
 
@@ -53,10 +56,10 @@ def _invoke_helper(queue, function):
 # On successful completion, success will be true and value may be None (if nothing was returned).
 def invoke_with_timeout(timeout, function):
     queue = multiprocessing.Queue(1)
-    invoke_helper = lambda: _invoke_helper(queue, function)
+    payload = dill.dumps(function)
 
     # Note that we use processes instead of threads so they can be more completely killed.
-    process = multiprocessing.Process(target = invoke_helper)
+    process = multiprocessing.Process(target = _invoke_helper, args = (queue, payload))
     process.start()
 
     # Wait for at most the timeout.

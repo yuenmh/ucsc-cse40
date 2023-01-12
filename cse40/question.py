@@ -27,7 +27,7 @@ class Question(object):
         self.score = 0
         self.message = ''
 
-    def grade(self, submission, additional_data = {}):
+    def grade(self, submission, additional_data = {}, show_exceptions = False):
         """
         Invoke the scoring method using a timeout and cleanup.
         Return the score.
@@ -39,6 +39,9 @@ class Question(object):
         try:
             success, value = cse40.utils.invoke_with_timeout(self._timeout, helper)
         except Exception:
+            if (show_exceptions):
+                traceback.print_exc()
+
             self.fail("Raised an exception: " + traceback.format_exc())
             return 0
 

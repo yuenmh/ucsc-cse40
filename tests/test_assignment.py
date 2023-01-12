@@ -24,7 +24,7 @@ class TestAssignment(unittest.TestCase):
         submission = lambda: True
 
         assignment = cse40.assignment.Assignment('test_base_full_credit', questions)
-        assignment.grade(submission)
+        assignment.grade(submission, show_exceptions = True)
 
         total_score, max_score = assignment.get_score()
 
@@ -39,7 +39,7 @@ class TestAssignment(unittest.TestCase):
         submission = lambda: False
 
         assignment = cse40.assignment.Assignment('test_base_fail', questions)
-        assignment.grade(submission)
+        assignment.grade(submission, show_exceptions = True)
 
         total_score, max_score = assignment.get_score()
 

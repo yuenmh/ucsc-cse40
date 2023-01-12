@@ -18,12 +18,13 @@ class Assignment(object):
         self._grading_start = None
         self._grading_end = None
 
-    def grade(self, submission, additional_data = {}):
+    def grade(self, submission, additional_data = {}, show_exceptions = False):
         self._grading_start = datetime.datetime.now().isoformat()
         score = 0
 
         for question in self._questions:
-            score += question.grade(submission, additional_data = additional_data)
+            score += question.grade(submission, additional_data = additional_data,
+                show_exceptions = show_exceptions)
 
         self._grading_end = datetime.datetime.now().isoformat()
 

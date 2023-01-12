@@ -1,10 +1,10 @@
 import atexit
-import dill
-import multiprocessing
 import os
+import queue
 import shutil
 import sys
 import tempfile
+import threading
 import traceback
 import uuid
 
@@ -34,9 +34,7 @@ class Mock(object):
         self.attribute_history.append(name)
         return self
 
-def _invoke_helper(queue, payload):
-    function = dill.loads(payload)
-
+def _invoke_helper(result, function):
     value = None
     error = None
 
@@ -47,39 +45,34 @@ def _invoke_helper(queue, payload):
 
     sys.stdout.flush()
 
-    queue.put((value, error))
-    queue.close()
+    result.put((value, error))
 
 # Return: (success, function return value)
 # On timeout, success will be false and the value will be None.
 # On error, success will be false and value will be the string stacktrace.
 # On successful completion, success will be true and value may be None (if nothing was returned).
 def invoke_with_timeout(timeout, function):
-    queue = multiprocessing.Queue(1)
-    payload = dill.dumps(function)
+    result = queue.Queue(1)
 
     # Note that we use processes instead of threads so they can be more completely killed.
-    process = multiprocessing.Process(target = _invoke_helper, args = (queue, payload))
-    process.start()
+    thread = threading.Thread(target = _invoke_helper, args = (result, function), daemon = True)
+    thread.start()
 
     # Wait for at most the timeout.
-    process.join(timeout)
+    thread.join(timeout)
 
     # Check to see if the thread is still running.
-    if process.is_alive():
-        # Kill the long-running thread.
-        process.terminate()
-
+    if thread.is_alive():
         # Try to reap the thread once before just giving up on it.
-        process.join(REAP_TIME_SEC)
+        thread.join(REAP_TIME_SEC)
 
         return (False, None)
 
-    # Check to see if the process explicitly existed (like via sys.exit()).
-    if (queue.empty()):
+    # Check to see if the thread explicitly existed (like via sys.exit()).
+    if (result.empty()):
         return (False, 'Code explicitly exited (like via sys.exit()).')
 
-    value, error = queue.get()
+    value, error = result.get()
 
     if (error is not None):
         exception, stacktrace = error

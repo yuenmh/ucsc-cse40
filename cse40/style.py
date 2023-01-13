@@ -114,6 +114,8 @@ def check_style(path, replace_output_path = None):
     return (report._application.result_count, lines)
 
 def main(path):
+    path = path.strip()
+
     count, lines = check_style(path)
     print("Found %d style errors." % (count))
 

@@ -6,6 +6,8 @@ import datetime
 
 from cse40.question import Question
 
+PRETTY_TIMESTEMP_FORMAT = '%Y-%m-%d -- %H:%M'
+
 class Assignment(object):
     """
     A collection of questions to be scored.
@@ -19,14 +21,14 @@ class Assignment(object):
         self._grading_end = None
 
     def grade(self, submission, additional_data = {}, show_exceptions = False):
-        self._grading_start = datetime.datetime.now().isoformat()
+        self._grading_start = datetime.datetime.now().strftime(PRETTY_TIMESTEMP_FORMAT)
         score = 0
 
         for question in self._questions:
             score += question.grade(submission, additional_data = additional_data,
                 show_exceptions = show_exceptions)
 
-        self._grading_end = datetime.datetime.now().isoformat()
+        self._grading_end = datetime.datetime.now().strftime(PRETTY_TIMESTEMP_FORMAT)
 
         return score
 

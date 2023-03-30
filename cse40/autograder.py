@@ -3,6 +3,7 @@ An interface for interacting with the autograder (submitting assignments, queryi
 """
 
 import argparse
+import datetime
 import json
 import sys
 import urllib.request
@@ -15,71 +16,73 @@ DEFAULT_CONFIG_PATH = 'config.json'
 DEFAULT_SUBMISSION_PATH = 'assignment.ipynb'
 DEFAULT_AUTOGRADER_URL = 'http://sozopol.soe.ucsc.edu:12345'
 
-TASK_SUBMIT = 'submit'
+TASK_HISTORY = 'history'
 TASK_REPEAT = 'repeat'
-TASKS = [TASK_SUBMIT, TASK_REPEAT]
+TASK_SUBMIT = 'submit'
+TASKS = [TASK_HISTORY, TASK_REPEAT, TASK_SUBMIT]
 
-def submit_notebook(config_path = DEFAULT_CONFIG_PATH, submission_path = DEFAULT_SUBMISSION_PATH,
+DATETIME_FORMAT = '%Y-%m-%d %H:%M'
+
+def request_history(config_path = DEFAULT_CONFIG_PATH, autograde_url = DEFAULT_AUTOGRADER_URL):
+    with open(config_path, 'r') as file:
+        config = json.load(file)
+
+    config['task'] = TASK_HISTORY
+
+    body, message = _send_request(config, autograde_url)
+    if (body is None):
+        return (False, message)
+
+    return (True, body['history'])
+
+def request_repeat(config_path = DEFAULT_CONFIG_PATH, autograde_url = DEFAULT_AUTOGRADER_URL):
+    with open(config_path, 'r') as file:
+        config = json.load(file)
+
+    config['task'] = TASK_REPEAT
+
+    body, message = _send_request(config, autograde_url)
+    if (body is None):
+        return (False, message)
+
+    return (True, cse40.assignment.Assignment.from_dict(body['assignment']))
+
+def request_submit(config_path = DEFAULT_CONFIG_PATH, submission_path = DEFAULT_SUBMISSION_PATH,
         autograde_url = DEFAULT_AUTOGRADER_URL):
     source_code = cse40.code.extract_code(submission_path)
 
     with open(config_path, 'r') as file:
         config = json.load(file)
 
-    config['task'] = 'grade'
+    config['task'] = TASK_SUBMIT
     config['code'] = source_code
 
-    payload = bytes(json.dumps(config), ENCODING)
-    raw_response = urllib.request.urlopen(autograde_url, data = payload)
-
-    status = raw_response.status
-    if (status != 200):
-        print("Got a failure status from the autograding server: %s." % (status))
-        return None
-
-    body = json.loads(raw_response.read().decode(encoding = ENCODING))
-
-    if (body['status'] != 'success'):
-        return (False, body['message'])
+    body, message = _send_request(config, autograde_url)
+    if (body is None):
+        return (False, message)
 
     return (True, cse40.assignment.Assignment.from_dict(body['assignment']))
 
-def submit(arguments):
-    (success, result) = submit_notebook(arguments.config_path, arguments.submission_path,
-            arguments.server)
+def _history(arguments):
+    (success, result) = request_history(arguments.config_path, arguments.server)
 
     if (not success):
-        print('The autograder failed to grade your assignment.')
+        print('The autograder could not compile a history of your past grades for this assignment.')
         print('Message from the autograder: ' + result)
         return 1
 
-    print('The autograder successfully graded your assignment.')
-    print(result.report())
+    print('The autograder successfully found your last attempts for this assignment.')
+    print('Past attmpts:')
+
+    for row in result:
+        timestamp = datetime.datetime.fromtimestamp(int(row['id'])).strftime(DATETIME_FORMAT)
+        score, max_score = row['score']
+        percent_score = (100.0 * score / max_score)
+        print("    %s -- %3d / %3d (%6.2f)" % (timestamp, score, max_score, percent_score))
 
     return 0
 
-def request_repeat(config_path = DEFAULT_CONFIG_PATH, autograde_url = DEFAULT_AUTOGRADER_URL):
-    with open(config_path, 'r') as file:
-        config = json.load(file)
-
-    config['task'] = 'repeat'
-
-    payload = bytes(json.dumps(config), ENCODING)
-    raw_response = urllib.request.urlopen(autograde_url, data = payload)
-
-    status = raw_response.status
-    if (status != 200):
-        print("Got a failure status from the autograding server: %s." % (status))
-        return None
-
-    body = json.loads(raw_response.read().decode(encoding = ENCODING))
-
-    if (body['status'] != 'success'):
-        return (False, body['message'])
-
-    return (True, cse40.assignment.Assignment.from_dict(body['assignment']))
-
-def repeat(arguments):
+def _repeat(arguments):
     (success, result) = request_repeat(arguments.config_path, arguments.server)
 
     if (not success):
@@ -92,11 +95,42 @@ def repeat(arguments):
 
     return 0
 
+def _submit(arguments):
+    (success, result) = request_submit(arguments.config_path, arguments.submission_path,
+            arguments.server)
+
+    if (not success):
+        print('The autograder failed to grade your assignment.')
+        print('Message from the autograder: ' + result)
+        return 1
+
+    print('The autograder successfully graded your assignment.')
+    print(result.report())
+
+    return 0
+
+def _send_request(config, autograde_url):
+    payload = bytes(json.dumps(config), ENCODING)
+    raw_response = urllib.request.urlopen(autograde_url, data = payload)
+
+    status = raw_response.status
+    if (status != 200):
+        return None, "Got a failure status from the autograding server: %s." % (status)
+
+    body = json.loads(raw_response.read().decode(encoding = ENCODING))
+
+    if (body['status'] != 'success'):
+        return (None, body['message'])
+
+    return body, None
+
 def main(arguments):
-    if (arguments.task == TASK_SUBMIT):
-        return submit(arguments)
+    if (arguments.task == TASK_HISTORY):
+        return _history(arguments)
     elif (arguments.task == TASK_REPEAT):
-        return repeat(arguments)
+        return _repeat(arguments)
+    elif (arguments.task == TASK_SUBMIT):
+        return _submit(arguments)
     else:
         print("ERROR: unknown task: '%s'." % (arguments.task))
         return 100

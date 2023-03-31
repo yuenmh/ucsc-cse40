@@ -72,7 +72,7 @@ def _history(arguments):
         return 1
 
     print('The autograder successfully found your last attempts for this assignment.')
-    print('Past attmpts:')
+    print('Past attempts:')
 
     for row in result:
         timestamp = datetime.datetime.fromtimestamp(int(row['id'])).strftime(DATETIME_FORMAT)

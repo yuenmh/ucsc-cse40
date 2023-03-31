@@ -31,7 +31,7 @@ def extract_code(path):
     else:
         raise ValueError("Unknown extension for extracting code: '%s'." % (path))
 
-    return code
+    return code.strip()
 
 def extract_notebook_code(path):
     """
@@ -48,7 +48,13 @@ def extract_notebook_code(path):
         if (cell['cell_type'] != 'code'):
             continue
 
-        contents.append((''.join(cell['source'])))
+        cell_code = ''.join(cell['source']).strip()
+
+        # Ignore empty cells.
+        if (cell_code == ''):
+            continue
+
+        contents.append(cell_code)
 
     return "\n".join(contents) + "\n"
 

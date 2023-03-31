@@ -32,6 +32,12 @@ STYLE_OPTIONS = {
         # Allow lambdas to be assigned into a local variable.
         'E731',
 
+        # Do not enforce spaces in blank lines.
+        # This should typically be enforced,
+        # but because code from notebooks is hard to give a nice line number for
+        # students have difficulty finding where the issue is.
+        'W293',
+
         # PEP-8 recommends breaking a line before a binary operator.
         # This was a recent reversal of idiomatic Python.
         # W503 enforces the old style, while W504 enforces the new style.

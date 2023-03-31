@@ -15,7 +15,7 @@ class TestImport(unittest.TestCase):
         for ext in ['py', 'ipynb']:
             path = os.path.join(DATA_DIR, 'simple.' + ext)
             source_code = cse40.code.extract_code(path)
-            self.assertEqual(source_code, "SOME_CONSTANT = 1\n")
+            self.assertEqual(source_code, "SOME_CONSTANT = 1")
 
     def test_import_base(self):
         for ext in ['py', 'ipynb']:

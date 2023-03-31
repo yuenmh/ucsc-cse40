@@ -78,7 +78,7 @@ def _history(arguments):
         timestamp = datetime.datetime.fromtimestamp(int(row['id'])).strftime(DATETIME_FORMAT)
         score, max_score = row['score']
         percent_score = (100.0 * score / max_score)
-        print("    %s -- %3d / %3d (%6.2f)" % (timestamp, score, max_score, percent_score))
+        print("    %s -- %3d / %3d (%6.2f%%)" % (timestamp, score, max_score, percent_score))
 
     return 0
 
@@ -139,8 +139,7 @@ def _load_args():
     parser = argparse.ArgumentParser(description = 'Submit a notebook to the autograding server.')
 
     parser.add_argument('task',
-        action = 'store', type = str, default = TASK_SUBMIT,
-        choices = TASKS,
+        action = 'store', type = str, choices = TASKS,
         help = 'The task to request from the autograder (default: %(default)s).')
 
     parser.add_argument('--config', dest = 'config_path',

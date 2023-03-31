@@ -6,7 +6,7 @@ import datetime
 
 from cse40.question import Question
 
-PRETTY_TIMESTEMP_FORMAT = '%Y-%m-%d -- %H:%M'
+PRETTY_TIMESTEMP_FORMAT = '%Y-%m-%d %H:%M'
 
 class Assignment(object):
     """

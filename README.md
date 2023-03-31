@@ -15,12 +15,12 @@ This package provides a utility for submitting assignments to the autograder in 
 
 If you are in your assignment directory, you can use the simple form:
 ```bash
-python -m cse40.submit
+python -m cse40.autograder submit
 ```
 
 For more complex situations, check the usage to see which arguments you can override (like assignment path and server location):
 ```bash
-python -m cse40.submit --help
+python -m cse40.autograder --help
 ```
 
 ### Checking Style

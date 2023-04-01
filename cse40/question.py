@@ -126,6 +126,17 @@ class Question(object):
 
         return "\n".join(lines)
 
+    def __eq__(self, other):
+        if (not isinstance(other, Question)):
+            return False
+
+        return (
+            (self.name == other.name)
+            and (self.max_points == other.max_points)
+            and (self._timeout == other._timeout)
+            and (self.score == other.score)
+            and (self.message == other.message))
+
     def to_dict(self):
         """
         Convert to all simple structures that can be later converted to JSON.

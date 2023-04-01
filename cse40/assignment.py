@@ -70,6 +70,16 @@ class Assignment(object):
 
         return "\n".join(output)
 
+    def __eq__(self, other):
+        if (not isinstance(other, Assignment)):
+            return False
+
+        return (
+            (self._name == other._name)
+            and (self._questions == other._questions)
+            and (self._grading_start == other._grading_start)
+            and (self._grading_end == other._grading_end))
+
     def to_dict(self):
         """
         Convert to all simple structures that can be later converted to JSON.

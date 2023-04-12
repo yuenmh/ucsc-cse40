@@ -140,7 +140,7 @@ def _load_args():
 
     parser.add_argument('task',
         action = 'store', type = str, choices = TASKS,
-        help = 'The task to request from the autograder (default: %(default)s).')
+        help = 'The task to request from the autograder.')
 
     parser.add_argument('--config', dest = 'config_path',
         action = 'store', type = str, default = DEFAULT_CONFIG_PATH,
